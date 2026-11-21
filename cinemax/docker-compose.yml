@@ -1,0 +1,41 @@
+services:
+  postgres_cinemax:
+    image: postgres:17
+    container_name: postgres_cinemax
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_DB: cinemax
+      POSTGRES_USER: cinemax
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+
+    ports:
+      - "5434:5432"
+
+    volumes:
+      - /home/dashcloudbi/docker/datos/postgres/cinemax:/var/lib/postgresql/data
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cinemax -d cinemax"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+    networks:
+      - netcinemax
+      - netemplea
+
+networks:
+  netcinemax:
+    name: netcinemax
+    driver: bridge
+
+  netemplea:
+    external: true
